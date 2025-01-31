@@ -31,10 +31,11 @@ public class SecurityConfig {
         this.customAuthService = customAuthService;
     }
 
-    private static final String[] WHITE_LIST = {
+    private static final String[] PUBLIC_URLS = {
+            "/api/auth/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-ui.html",
+            "/swagger-ui.html"
     };
 
     @Bean
@@ -42,9 +43,9 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(WHITE_LIST).permitAll()
-                        .requestMatchers("/auth/user").hasRole("USER")
-                        .requestMatchers("/auth/admin").hasRole("ADMIN")
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        /*.requestMatchers("/auth/user").hasRole("USER")
+                        .requestMatchers("/auth/admin").hasRole("ADMIN")*/
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

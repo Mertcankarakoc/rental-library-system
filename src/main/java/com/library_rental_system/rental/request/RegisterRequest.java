@@ -1,5 +1,8 @@
 package com.library_rental_system.rental.request;
 
+import com.library_rental_system.rental.model.Enum.Role;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,4 +27,6 @@ public class RegisterRequest {
     @NotNull(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

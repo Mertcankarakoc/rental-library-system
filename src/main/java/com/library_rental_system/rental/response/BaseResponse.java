@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseResponse {
-
     public String message = "";
     public String status = "";
     public int statusCode = 0;
