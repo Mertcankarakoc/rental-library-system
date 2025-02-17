@@ -1,4 +1,4 @@
-package com.library_rental_system.rental.configuration;
+package com.library_rental_system.rental.controller;
 
 import com.library_rental_system.rental.request.LoginRequest;
 import com.library_rental_system.rental.request.RegisterRequest;

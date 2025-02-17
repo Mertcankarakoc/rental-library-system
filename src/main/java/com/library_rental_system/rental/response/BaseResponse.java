@@ -12,5 +12,4 @@ public class BaseResponse {
     public String status = "";
     public int statusCode = 0;
     public String errorCode = "";
-    public String messageCode = "";
 }

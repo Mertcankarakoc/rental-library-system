@@ -6,12 +6,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -21,9 +23,9 @@ public class User {
     private Long id;
 
     @Size(min = 3, max = 50)
-    private String name;
+    private String firstName;
     @Size(min = 3, max = 50)
-    private String surname;
+    private String lastName;
     @Email
     @NotNull(message = "Email is required")
     private String email;

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/rental_db
+    url: jdbc:postgresql://localhost:5432/rental-system-db
     username: postgres
     password: root
   jpa:

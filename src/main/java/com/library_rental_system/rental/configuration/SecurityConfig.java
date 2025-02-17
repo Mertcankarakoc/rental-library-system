@@ -2,6 +2,7 @@ package com.library_rental_system.rental.configuration;
 
 import com.library_rental_system.rental.service.CustomAuthService;
 import com.library_rental_system.rental.util.JwtAuthFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,13 +25,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
-    private final CustomAuthService customAuthService;
-
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, CustomAuthService customAuthService) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.customAuthService = customAuthService;
-    }
+    @Autowired
+    JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    CustomAuthService customAuthService;
 
     private static final String[] PUBLIC_URLS = {
             "/api/auth/**",
@@ -44,8 +43,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        /*.requestMatchers("/auth/user").hasRole("USER")
-                        .requestMatchers("/auth/admin").hasRole("ADMIN")*/
+                        //.requestMatchers("/api/user/all").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -71,4 +69,9 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+//    @Bean
+//    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+//        return new GrantedAuthorityDefaults("ROLE_"); // Remove the ROLE_ prefix
+//    }
 }

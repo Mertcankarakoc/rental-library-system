@@ -31,6 +31,7 @@ public class JwtUtil {
         // token content
         claims.put("email", user.getEmail());
         claims.put("id", user.getId());
+        claims.put("role", user.getRole());
         Date tokenCreateTime = new Date(); // token creation time
         Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(expirationTime)); // token expiration time
 
@@ -44,7 +45,10 @@ public class JwtUtil {
     public Boolean validateToken(String token, CustomAuthService customAuthService) {
         String email = extractEmail(token);
         Date expirationDate = extractExpiration(token);
-        return customAuthService.loadUserByUsername(email).equals(email) && !expirationDate.before(new Date());
+
+        UserDetails userDetails = customAuthService.loadUserByUsername(email);
+        return userDetails != null && !expirationDate.before(new Date());
+                //customAuthService.loadUserByUsername(email).equals(email) && !expirationDate.before(new Date());
     }
 
 

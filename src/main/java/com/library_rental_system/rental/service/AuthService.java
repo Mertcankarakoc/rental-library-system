@@ -40,8 +40,8 @@ public class AuthService {
         try {
 
             User user = new User();
-            user.setName(registerRequest.getName());
-            user.setSurname(registerRequest.getSurname());
+            user.setFirstName(registerRequest.getFirstName());
+            user.setLastName(registerRequest.getLastName());
             user.setEmail(registerRequest.getEmail());
             user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
             if (registerRequest.getRole() == null) {
@@ -54,7 +54,7 @@ public class AuthService {
 
             registerResponse.setMessage("User registered successfully.");
             registerResponse.setStatus("SUCCESS");
-            registerResponse.setStatusCode(201);
+            registerResponse.setStatusCode(200);
 
         } catch (Exception exception) {
             registerResponse.setMessage("An error occurred: " + exception.getMessage());

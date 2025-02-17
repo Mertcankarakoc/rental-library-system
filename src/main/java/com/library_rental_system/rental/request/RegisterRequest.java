@@ -17,10 +17,10 @@ public class RegisterRequest {
 
     @NotNull(message = "Name is required")
     @Size(min = 3, max = 15, message = "Name must be at least 3 characters")
-    private String name;
+    private String firstName;
     @NotNull(message = "Surname is required")
     @Size(min = 3, max = 20, message = "Surname must be at least 3 characters")
-    private String surname;
+    private String lastName;
     @NotNull(message = "Email is required")
     @Email
     private String email;
