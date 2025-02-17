@@ -5,6 +5,7 @@ import com.library_rental_system.rental.mapper.UserMapper;
 import com.library_rental_system.rental.model.User;
 import com.library_rental_system.rental.repository.UserRepository;
 import com.library_rental_system.rental.response.GetUserResponse;
+import com.library_rental_system.rental.response.GetUsersResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +22,26 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public GetUsersResponse getAllUsers() {
+
+        GetUsersResponse getUsersResponse = new GetUsersResponse();
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()) {
+            getUsersResponse.setMessage("No users found");
+            getUsersResponse.setStatus("NOT FOUND");
+            getUsersResponse.setStatusCode(404);
+            return getUsersResponse;
+        }
+
+        List<UserDto> userDtos = userMapper.toUsersDto(users);
+        getUsersResponse.setUsers(userDtos);
+        getUsersResponse.setMessage("Users found");
+        getUsersResponse.setStatus("SUCCESS");
+        getUsersResponse.setStatusCode(200);
+        return getUsersResponse;
     }
+
+
     public GetUserResponse getUserById(Long userId) {
         GetUserResponse getUserResponse = new GetUserResponse();
         if (userId == null) {
