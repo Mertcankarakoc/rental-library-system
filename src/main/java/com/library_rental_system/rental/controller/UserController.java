@@ -1,13 +1,14 @@
 package com.library_rental_system.rental.controller;
 
+import com.library_rental_system.rental.request.UpdateProfileRequest;
 import com.library_rental_system.rental.response.GetUserResponse;
 import com.library_rental_system.rental.response.GetUsersResponse;
+import com.library_rental_system.rental.response.UpdateUserProfileResponse;
 import com.library_rental_system.rental.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -19,6 +20,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{userId}")
     public GetUserResponse getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
@@ -29,5 +31,12 @@ public class UserController {
     public GetUsersResponse getAllUsers() {
         return userService.getAllUsers();
     }
+
+    @PutMapping("/updateProfile")
+    public UpdateUserProfileResponse updateProfile(@RequestBody UpdateProfileRequest updateProfileRequest,
+                                                   @AuthenticationPrincipal UserDetails userDetails) {
+        return userService.updateProfile(updateProfileRequest, userDetails);
+    }
+
 
 }

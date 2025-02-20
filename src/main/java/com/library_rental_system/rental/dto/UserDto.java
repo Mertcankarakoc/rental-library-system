@@ -1,6 +1,10 @@
 package com.library_rental_system.rental.dto;
 
-import lombok.*;
+import com.library_rental_system.rental.model.Address;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -12,6 +16,7 @@ public class UserDto {
     private String name;
     private String surname;
     private String phoneNumber;
+    private Address address;
     private String email;
     private String password;
 }

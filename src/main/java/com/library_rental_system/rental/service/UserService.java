@@ -1,11 +1,19 @@
 package com.library_rental_system.rental.service;
 
+import com.library_rental_system.rental.dto.AddressDto;
+import com.library_rental_system.rental.dto.UpdateUserDto;
 import com.library_rental_system.rental.dto.UserDto;
 import com.library_rental_system.rental.mapper.UserMapper;
+import com.library_rental_system.rental.model.Address;
 import com.library_rental_system.rental.model.User;
+import com.library_rental_system.rental.repository.AddressRepository;
 import com.library_rental_system.rental.repository.UserRepository;
+import com.library_rental_system.rental.request.UpdateProfileRequest;
 import com.library_rental_system.rental.response.GetUserResponse;
 import com.library_rental_system.rental.response.GetUsersResponse;
+import com.library_rental_system.rental.response.UpdateUserProfileResponse;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,11 +23,15 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, AddressRepository addressRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public GetUsersResponse getAllUsers() {
@@ -67,6 +79,62 @@ public class UserService {
         getUserResponse.setStatusCode(200);
         return getUserResponse;
     }
+
+
+    public UpdateUserProfileResponse updateProfile(UpdateProfileRequest updateProfileRequest, UserDetails userDetails) {
+        String email = userDetails.getUsername();
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return UpdateUserProfileResponse.userProfileResponse("User not found", "NOT FOUND", 404, null);
+        }
+
+        UpdateUserDto updateUserDto = updateProfileRequest.getUpdateUserDto();
+        if (updateUserDto == null) {
+            return UpdateUserProfileResponse.userProfileResponse("User details cannot be null", "BAD REQUEST", 400, null);
+        }
+
+        if (updateUserDto.getPhoneNumber() != null && !updateUserDto.getPhoneNumber().isEmpty()) {
+            user.setPhoneNumber(updateUserDto.getPhoneNumber());
+        }
+        if (updateUserDto.getEmail() != null && !updateUserDto.getEmail().isEmpty()) {
+            user.setEmail(updateUserDto.getEmail());
+        }
+
+        if (updateUserDto.getAddress() != null) {
+            AddressDto addressDto = updateUserDto.getAddress();
+
+            Address existingAddress = user.getAddress();
+            boolean isSharedAddress = existingAddress != null && existingAddress.getUsers().size() > 1;
+
+            Address address;
+            if (isSharedAddress) {
+                address = new Address();
+                address.setStreet(addressDto.getStreet());
+                address.setCity(addressDto.getCity());
+                address.setCountry(addressDto.getCountry());
+                address.setDescription(addressDto.getDescription());
+                address.setZipCode(addressDto.getZipCode());
+                addressRepository.save(address);
+            } else {
+                address = existingAddress != null ? existingAddress : new Address();
+                address.setStreet(addressDto.getStreet());
+                address.setCity(addressDto.getCity());
+                address.setCountry(addressDto.getCountry());
+                address.setDescription(addressDto.getDescription());
+                address.setZipCode(addressDto.getZipCode());
+
+                addressRepository.save(address);
+            }
+
+            user.setAddress(address);
+        }
+
+        userRepository.save(user);
+
+        return UpdateUserProfileResponse.userProfileResponse("User updated successfully", "SUCCESS", 200, user.getId());
+    }
+
 
 
 }

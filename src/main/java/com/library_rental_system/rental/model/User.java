@@ -35,4 +35,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
+
 }
