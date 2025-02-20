@@ -8,7 +8,9 @@ import com.library_rental_system.rental.model.Address;
 import com.library_rental_system.rental.model.User;
 import com.library_rental_system.rental.repository.AddressRepository;
 import com.library_rental_system.rental.repository.UserRepository;
+import com.library_rental_system.rental.request.ChangePasswordRequest;
 import com.library_rental_system.rental.request.UpdateProfileRequest;
+import com.library_rental_system.rental.response.ChangePasswordResponse;
 import com.library_rental_system.rental.response.GetUserResponse;
 import com.library_rental_system.rental.response.GetUsersResponse;
 import com.library_rental_system.rental.response.UpdateUserProfileResponse;
@@ -80,7 +82,6 @@ public class UserService {
         return getUserResponse;
     }
 
-
     public UpdateUserProfileResponse updateProfile(UpdateProfileRequest updateProfileRequest, UserDetails userDetails) {
         String email = userDetails.getUsername();
 
@@ -133,6 +134,40 @@ public class UserService {
         userRepository.save(user);
 
         return UpdateUserProfileResponse.userProfileResponse("User updated successfully", "SUCCESS", 200, user.getId());
+    }
+
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest) {
+        ChangePasswordResponse response = new ChangePasswordResponse();
+
+        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByEmail(changePasswordRequest.getEmail()));
+        if (optionalUser.isEmpty()) {
+            response.setStatus("NOT FOUND");
+            response.setMessage("User not found");
+            response.setStatusCode(404);
+            return response;
+        }
+
+        User user = optionalUser.get();
+
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(),user.getPassword())) {
+            response.setMessage("Old password is incorrect");
+            response.setStatusCode(400);
+            return response;
+        }
+
+        String hashedNewPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
+        user.setPassword(hashedNewPassword);
+        userRepository.save(user);
+
+        response.setStatus("SUCCESS");
+        response.setMessage("Password changed successfully");
+        response.setStatusCode(200);
+
+        return response;
     }
 
 

@@ -1,6 +1,8 @@
 package com.library_rental_system.rental.controller;
 
+import com.library_rental_system.rental.request.ChangePasswordRequest;
 import com.library_rental_system.rental.request.UpdateProfileRequest;
+import com.library_rental_system.rental.response.ChangePasswordResponse;
 import com.library_rental_system.rental.response.GetUserResponse;
 import com.library_rental_system.rental.response.GetUsersResponse;
 import com.library_rental_system.rental.response.UpdateUserProfileResponse;
@@ -38,5 +40,14 @@ public class UserController {
         return userService.updateProfile(updateProfileRequest, userDetails);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/delete/{userId}")
+    public void deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+    }
 
+    @PutMapping("/changePassword")
+    public ChangePasswordResponse changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        return userService.changePassword(changePasswordRequest);
+    }
 }
