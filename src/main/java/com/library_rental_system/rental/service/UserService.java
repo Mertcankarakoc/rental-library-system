@@ -52,6 +52,7 @@ public class UserService {
         getUsersResponse.setMessage("Users found");
         getUsersResponse.setStatus("SUCCESS");
         getUsersResponse.setStatusCode(200);
+
         return getUsersResponse;
     }
 
@@ -79,6 +80,7 @@ public class UserService {
         getUserResponse.setMessage("User found");
         getUserResponse.setStatus("SUCCESS");
         getUserResponse.setStatusCode(200);
+
         return getUserResponse;
     }
 
@@ -92,12 +94,13 @@ public class UserService {
 
         UpdateUserDto updateUserDto = updateProfileRequest.getUpdateUserDto();
         if (updateUserDto == null) {
-            return UpdateUserProfileResponse.userProfileResponse("User details cannot be null", "BAD REQUEST", 400, null);
+            return UpdateUserProfileResponse.userProfileResponse("User details cannot be null" , "BAD REQUEST", 404, null);
         }
 
         if (updateUserDto.getPhoneNumber() != null && !updateUserDto.getPhoneNumber().isEmpty()) {
             user.setPhoneNumber(updateUserDto.getPhoneNumber());
         }
+
         if (updateUserDto.getEmail() != null && !updateUserDto.getEmail().isEmpty()) {
             user.setEmail(updateUserDto.getEmail());
         }
@@ -106,31 +109,31 @@ public class UserService {
             AddressDto addressDto = updateUserDto.getAddress();
 
             Address existingAddress = user.getAddress();
-            boolean isSharedAddress = existingAddress != null && existingAddress.getUsers().size() > 1;
-
+            Boolean isSharedAddress = existingAddress != null && existingAddress.getUsers().size() > 1;
             Address address;
+
             if (isSharedAddress) {
                 address = new Address();
                 address.setStreet(addressDto.getStreet());
                 address.setCity(addressDto.getCity());
                 address.setCountry(addressDto.getCountry());
-                address.setDescription(addressDto.getDescription());
                 address.setZipCode(addressDto.getZipCode());
+                address.setDescription(addressDto.getDescription());
+
                 addressRepository.save(address);
             } else {
                 address = existingAddress != null ? existingAddress : new Address();
                 address.setStreet(addressDto.getStreet());
                 address.setCity(addressDto.getCity());
                 address.setCountry(addressDto.getCountry());
-                address.setDescription(addressDto.getDescription());
                 address.setZipCode(addressDto.getZipCode());
+                address.setDescription(addressDto.getDescription());
 
                 addressRepository.save(address);
             }
 
             user.setAddress(address);
         }
-
         userRepository.save(user);
 
         return UpdateUserProfileResponse.userProfileResponse("User updated successfully", "SUCCESS", 200, user.getId());

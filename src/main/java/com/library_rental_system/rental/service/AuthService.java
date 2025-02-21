@@ -38,7 +38,6 @@ public class AuthService {
         }
 
         try {
-
             User user = new User();
             user.setFirstName(registerRequest.getFirstName());
             user.setLastName(registerRequest.getLastName());
