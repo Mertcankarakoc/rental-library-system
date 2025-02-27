@@ -1,9 +1,7 @@
 package com.library_rental_system.rental.service;
 
 import com.library_rental_system.rental.dto.BookDto;
-import com.library_rental_system.rental.dto.CategoryDto;
 import com.library_rental_system.rental.mapper.BookMapper;
-import com.library_rental_system.rental.mapper.UserMapper;
 import com.library_rental_system.rental.model.Book;
 import com.library_rental_system.rental.model.Category;
 import com.library_rental_system.rental.repository.BookRepository;
@@ -11,13 +9,9 @@ import com.library_rental_system.rental.repository.CategoryRepository;
 import com.library_rental_system.rental.request.CreateBookRequest;
 import com.library_rental_system.rental.response.CreateBookResponse;
 import com.library_rental_system.rental.response.GetBooksResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -67,16 +61,15 @@ public class BookService {
             book.setAuthor(createBookRequest.getAuthor());
             book.setIsbn(createBookRequest.getIsbn());
             book.setAvailableCopies(createBookRequest.getAvailableCopies());
+
             Category category = categoryRepository.findByName(createBookRequest.getCategoryName());
-            if (category == null) {
-                response.setMessage("Category not found");
-                response.setStatus("NOT FOUND");
-                response.setStatusCode(404);
-                return response;
+            if (category == null ) {
+                category = new Category();
+                category.setName(createBookRequest.getCategoryName());
+                category = categoryRepository.save(category);
             }
 
         book.setCategory(category);
-
         bookRepository.save(book);
 
         response.setMessage("Book created successfully");
@@ -84,5 +77,9 @@ public class BookService {
         response.setStatusCode(200);
 
         return response;
+    }
+
+    public void deleteBook(Long bookId) {
+        bookRepository.deleteById(bookId);
     }
 }
